@@ -20,7 +20,7 @@ export function OverallScoreRing({ score, size = 132, thickness = 10 }: Props): 
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="#26282C"
+          stroke="rgb(var(--border))"
           strokeWidth={thickness}
           fill="none"
         />
@@ -28,26 +28,30 @@ export function OverallScoreRing({ score, size = 132, thickness = 10 }: Props): 
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="#B5FF6B"
+          stroke="rgb(var(--logo))"
           strokeWidth={thickness}
           fill="none"
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={offset}
-          style={{ transition: "stroke-dashoffset 700ms ease" }}
+          style={{ transition: "stroke-dashoffset 700ms cubic-bezier(0.4, 0, 0.2, 1)" }}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-mono text-3xl font-semibold text-ink">{Math.round(clamped)}</span>
-        <span className={cn("text-xs uppercase tracking-widest", grade.tone)}>{grade.label}</span>
+        <span className="text-mono text-[34px] font-semibold leading-none tracking-tight text-ink">
+          {Math.round(clamped)}
+        </span>
+        <span className={cn("mt-1 text-[12px] uppercase tracking-[0.18em]", grade.tone)}>
+          {grade.label}
+        </span>
       </div>
     </div>
   );
 }
 
 function scoreGrade(score: number): { label: string; tone: string } {
-  if (score >= 80) return { label: "Strong", tone: "text-accent" };
-  if (score >= 60) return { label: "Solid", tone: "text-accent/80" };
+  if (score >= 80) return { label: "Strong", tone: "text-ink" };
+  if (score >= 60) return { label: "Solid", tone: "text-ink-soft" };
   if (score >= 40) return { label: "Mixed", tone: "text-warning" };
-  return { label: "Weak", tone: "text-danger" };
+  return { label: "Weak", tone: "text-danger-ink" };
 }

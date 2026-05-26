@@ -4,12 +4,37 @@ import { AppStoreClient } from "./services/app-store-client.js";
 import { toSurfaceMetadata } from "./domain/app-store.js";
 import type { AppStoreListing } from "./domain/app-store.js";
 import { mastra } from "./mastra/index.js";
+import { hasConfiguredModel } from "./mastra/model.js";
+import { hasFirecrawl } from "./env.js";
+import { PublicError } from "./lib/errors.js";
+
+function listingHighlights(listing: AppStoreListing): Record<string, unknown> {
+  return {
+    subtitle: listing.subtitle ?? null,
+    promotionalText: listing.promotionalText ?? null,
+    whatsNew: listing.whatsNew ?? null,
+    averageUserRating: listing.averageUserRating ?? null,
+    userRatingCount: listing.userRatingCount ?? null,
+    formattedPrice: listing.formattedPrice ?? null,
+    contentAdvisoryRating: listing.contentAdvisoryRating ?? null,
+    currentVersionReleaseDate: listing.currentVersionReleaseDate ?? null,
+    version: listing.version ?? null
+  };
+}
 
 const listingClient = new AppStoreClient();
 
 const urlBody = z.object({
   url: z.string().url()
 });
+
+function parseUrlBody(body: unknown): { url: string } {
+  const result = urlBody.safeParse(body);
+  if (!result.success) {
+    throw new PublicError("Please paste a valid App Store URL.");
+  }
+  return result.data;
+}
 
 export function registerRoutes(app: Express): void {
   app.get("/api/health", (_req, res) => {
@@ -22,11 +47,16 @@ export function registerRoutes(app: Express): void {
    * app's icon/name within ~300ms.
    */
   app.post("/api/listing", asyncRoute(async (req, res) => {
-    const { url } = urlBody.parse(req.body);
+    const { url } = parseUrlBody(req.body);
     const listing = await listingClient.fetchListing(url);
     res.json({
       surfaceMetadata: toSurfaceMetadata(listing),
-      trackViewUrl: listing.trackViewUrl
+      highlights: listingHighlights(listing),
+      trackViewUrl: listing.trackViewUrl,
+      capabilities: {
+        llm: hasConfiguredModel(),
+        firecrawl: hasFirecrawl()
+      }
     });
   }));
 
@@ -36,7 +66,7 @@ export function registerRoutes(app: Express): void {
    * the agent's tool list.
    */
   app.post("/api/audit", asyncRoute(async (req, res) => {
-    const { url } = urlBody.parse(req.body);
+    const { url } = parseUrlBody(req.body);
 
     const workflow = mastra.getWorkflow("asoAudit");
     const run = await workflow.createRun();
@@ -51,6 +81,7 @@ export function registerRoutes(app: Express): void {
 
     res.json({
       surfaceMetadata: toSurfaceMetadata(listing),
+      highlights: listingHighlights(listing),
       trackViewUrl: listing.trackViewUrl,
       audit,
       competitors: competitors.map((c: AppStoreListing) => ({
@@ -60,7 +91,11 @@ export function registerRoutes(app: Express): void {
         ratingCount: c.userRatingCount,
         url: c.trackViewUrl
       })),
-      usedLlmRefinement
+      usedLlmRefinement,
+      capabilities: {
+        llm: hasConfiguredModel(),
+        firecrawl: hasFirecrawl()
+      }
     });
   }));
 }

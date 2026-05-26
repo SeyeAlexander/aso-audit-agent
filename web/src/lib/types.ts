@@ -48,6 +48,23 @@ export interface SurfaceMetadata {
   appId: number;
 }
 
+export interface ListingHighlights {
+  subtitle: string | null;
+  promotionalText: string | null;
+  whatsNew: string | null;
+  averageUserRating: number | null;
+  userRatingCount: number | null;
+  formattedPrice: string | null;
+  contentAdvisoryRating: string | null;
+  currentVersionReleaseDate: string | null;
+  version: string | null;
+}
+
+export interface Capabilities {
+  llm: boolean;
+  firecrawl: boolean;
+}
+
 export interface Recommendation {
   title: string;
   evidence: string;
@@ -81,7 +98,9 @@ export interface AsoAudit {
 
 export interface ListingResponse {
   surfaceMetadata: SurfaceMetadata;
+  highlights: ListingHighlights;
   trackViewUrl: string;
+  capabilities: Capabilities;
 }
 
 export interface CompetitorSummary {
@@ -94,8 +113,10 @@ export interface CompetitorSummary {
 
 export interface AuditResponse {
   surfaceMetadata: SurfaceMetadata;
+  highlights: ListingHighlights;
   trackViewUrl: string;
   audit: AsoAudit;
   competitors: CompetitorSummary[];
   usedLlmRefinement: boolean;
+  capabilities: Capabilities;
 }

@@ -1,34 +1,51 @@
 import type { Config } from "tailwindcss";
 
+/**
+ * Theme tokens live in CSS variables (globals.css) so the same Tailwind class
+ * works in both light and dark mode. The lime accent (`logo`) is the only
+ * brand-color literal — everything else is a semantic token.
+ */
 export default {
+  darkMode: ["selector", "[data-theme=\"dark\"]"],
   content: ["./web/index.html", "./web/src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        accent: {
-          DEFAULT: "#B5FF6B",
-          soft: "#D8FFAA",
-          dim: "#7FB94A"
-        },
-        surface: "#0E0F11",
-        panel: "#17181B",
-        elevated: "#1E2024",
-        border: "#26282C",
-        muted: "#9A9BA0",
-        ink: "#F5F6F7",
-        danger: "#FF6B6B",
-        warning: "#FFD166"
+        bg: "rgb(var(--bg) / <alpha-value>)",
+        surface: "rgb(var(--surface) / <alpha-value>)",
+        elevated: "rgb(var(--elevated) / <alpha-value>)",
+        sunken: "rgb(var(--sunken) / <alpha-value>)",
+        border: "rgb(var(--border) / <alpha-value>)",
+        ring: "rgb(var(--ring) / <alpha-value>)",
+        ink: "rgb(var(--ink) / <alpha-value>)",
+        "ink-soft": "rgb(var(--ink-soft) / <alpha-value>)",
+        muted: "rgb(var(--muted) / <alpha-value>)",
+        logo: "rgb(var(--logo) / <alpha-value>)",
+        primary: "rgb(var(--primary) / <alpha-value>)",
+        "primary-ink": "rgb(var(--primary-ink) / <alpha-value>)",
+        "accent-blue": "rgb(var(--accent-blue) / <alpha-value>)",
+        danger: "rgb(var(--danger) / <alpha-value>)",
+        "danger-ink": "rgb(var(--danger-ink) / <alpha-value>)",
+        success: "rgb(var(--success) / <alpha-value>)",
+        warning: "rgb(var(--warning) / <alpha-value>)"
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
-        mono: ["JetBrains Mono", "ui-monospace", "monospace"]
+        sans: ['"DM Sans"', "system-ui", "sans-serif"],
+        mono: ['"IBM Plex Mono"', "ui-monospace", "monospace"]
       },
       borderRadius: {
-        xl: "14px",
-        "2xl": "20px"
+        xs: "2px",
+        sm: "4px",
+        md: "6px",
+        lg: "12px",
+        xl: "16px"
       },
       boxShadow: {
-        panel: "0 1px 0 rgba(255,255,255,0.04) inset, 0 8px 24px rgba(0,0,0,0.35)"
+        card: "0 1px 0 rgb(var(--ink) / 0.04), 0 8px 24px rgb(0 0 0 / 0.06)",
+        "card-dark": "0 1px 0 rgb(255 255 255 / 0.04), 0 8px 24px rgb(0 0 0 / 0.4)"
+      },
+      transitionTimingFunction: {
+        ease: "cubic-bezier(0.4, 0, 0.2, 1)"
       }
     }
   },

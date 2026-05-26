@@ -1,227 +1,144 @@
-import { useCallback, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { fetchListing, runAudit } from "./lib/api";
 import type { AuditResponse, ListingResponse } from "./lib/types";
-import { UrlPrompt } from "./components/UrlPrompt";
-import { AppPreviewCard } from "./components/AppPreviewCard";
-import { ScoreCard } from "./components/ScoreCard";
-import { RecommendationSection } from "./components/RecommendationSection";
-import { CompetitorTable } from "./components/CompetitorTable";
+import { useAuditHistory } from "./lib/history";
+import { TopBar } from "./components/TopBar";
+import { StepFooter, type StepId } from "./components/StepFooter";
+import { StepInput } from "./components/steps/StepInput";
+import { StepConfirm } from "./components/steps/StepConfirm";
+import { StepRunning } from "./components/steps/StepRunning";
+import { ResultsView } from "./components/ResultsView";
+import { AuditHistoryStrip } from "./components/AuditHistoryStrip";
 
 type Stage =
-  | { kind: "idle" }
-  | { kind: "fetching-listing"; url: string }
-  | { kind: "awaiting-confirmation"; url: string; listing: ListingResponse }
-  | { kind: "auditing"; url: string; listing: ListingResponse }
-  | { kind: "done"; url: string; audit: AuditResponse }
-  | { kind: "error"; url: string; message: string };
+  | { kind: "paste-url"; url: string; loading: boolean; error?: string }
+  | { kind: "confirm-app"; url: string; listing: ListingResponse }
+  | { kind: "running"; url: string; listing: ListingResponse }
+  | { kind: "results"; url: string; audit: AuditResponse };
+
+function stageToStepId(stage: Stage): StepId {
+  return stage.kind;
+}
 
 export function App(): JSX.Element {
-  const [stage, setStage] = useState<Stage>({ kind: "idle" });
+  const [stage, setStage] = useState<Stage>({ kind: "paste-url", url: "", loading: false });
+  const { entries, record, getCached, remove } = useAuditHistory();
 
-  const handleUrlSubmit = useCallback(async (url: string) => {
-    setStage({ kind: "fetching-listing", url });
+  const goHome = useCallback((): void => {
+    setStage({ kind: "paste-url", url: "", loading: false });
+  }, []);
+
+  const submitUrl = useCallback(async (url: string): Promise<void> => {
+    setStage({ kind: "paste-url", url, loading: true });
     try {
       const listing = await fetchListing(url);
-      setStage({ kind: "awaiting-confirmation", url, listing });
+      setStage({ kind: "confirm-app", url, listing });
     } catch (error) {
-      setStage({ kind: "error", url, message: messageOf(error) });
+      setStage({
+        kind: "paste-url",
+        url,
+        loading: false,
+        error: error instanceof Error ? error.message : "Something went wrong."
+      });
     }
   }, []);
 
-  const handleConfirm = useCallback(async () => {
-    if (stage.kind !== "awaiting-confirmation") return;
-    const url = stage.url;
-    setStage({ kind: "auditing", url, listing: stage.listing });
+  // Clicking a "Recent audits" chip re-opens the cached report instantly. If
+  // the entry predates audit caching (no stored payload), fall back to a fresh
+  // audit so the chip never dead-ends.
+  const openFromHistory = useCallback(
+    (appStoreUrl: string): void => {
+      const cached = getCached(appStoreUrl);
+      if (cached) {
+        setStage({ kind: "results", url: appStoreUrl, audit: cached });
+        return;
+      }
+      void submitUrl(appStoreUrl);
+    },
+    [getCached, submitUrl]
+  );
+
+  const startAudit = useCallback(async (): Promise<void> => {
+    if (stage.kind !== "confirm-app") return;
+    const { url, listing } = stage;
+    setStage({ kind: "running", url, listing });
     try {
       const audit = await runAudit(url);
-      setStage({ kind: "done", url, audit });
+      record(audit);
+      setStage({ kind: "results", url, audit });
     } catch (error) {
-      setStage({ kind: "error", url, message: messageOf(error) });
+      setStage({
+        kind: "paste-url",
+        url,
+        loading: false,
+        error: error instanceof Error ? error.message : "Audit failed."
+      });
     }
-  }, [stage]);
+  }, [stage, record]);
 
-  const reset = useCallback(() => setStage({ kind: "idle" }), []);
+  const resetToInput = useCallback((): void => {
+    setStage((current) =>
+      current.kind === "paste-url"
+        ? current
+        : { kind: "paste-url", url: "url" in current ? current.url : "", loading: false }
+    );
+  }, []);
+
+  // Keep top of page when stage transitions to results.
+  useEffect(() => {
+    if (stage.kind === "results") {
+      window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+    }
+  }, [stage.kind]);
 
   return (
-    <div className="min-h-full flex flex-col items-center px-4 py-10 sm:py-16">
-      <Header onReset={reset} active={stage.kind !== "idle"} />
+    <div className="min-h-full flex flex-col">
+      <TopBar onHome={goHome} />
 
-      <main className="mt-12 w-full max-w-5xl flex flex-col items-center gap-8">
-        {(stage.kind === "idle" ||
-          stage.kind === "fetching-listing" ||
-          stage.kind === "error") && (
-          <>
-            <Pitch />
-            <UrlPrompt
-              onSubmit={handleUrlSubmit}
-              loading={stage.kind === "fetching-listing"}
-              error={stage.kind === "error" ? stage.message : null}
-            />
-            <FootHint />
-          </>
+      <main
+        className={[
+          "flex-1 px-4 sm:px-6 flex flex-col items-center",
+          // Only the URL-input screen vertically centers; the rest start from
+          // the top so the cards anchor near the masthead and don't shift down
+          // as content grows.
+          stage.kind === "paste-url"
+            ? "py-4 sm:py-6 min-h-[calc(100dvh-7.5rem)] justify-center"
+            : "py-6 sm:py-10"
+        ].join(" ")}
+      >
+        {stage.kind === "paste-url" && (
+          <StepInput
+            initialValue={stage.url}
+            onSubmit={submitUrl}
+            loading={stage.loading}
+            error={stage.error ?? null}
+          >
+            <AuditHistoryStrip entries={entries} onPick={openFromHistory} onRemove={remove} />
+          </StepInput>
         )}
 
-        {stage.kind === "awaiting-confirmation" && (
-          <>
-            <Pitch compact />
-            <AppPreviewCard
-              metadata={stage.listing.surfaceMetadata}
-              onConfirm={handleConfirm}
-              onReset={reset}
-              confirming={false}
-            />
-          </>
+        {stage.kind === "confirm-app" && (
+          <StepConfirm data={stage.listing} onConfirm={startAudit} onReset={resetToInput} />
         )}
 
-        {stage.kind === "auditing" && (
-          <>
-            <AppPreviewCard
-              metadata={stage.listing.surfaceMetadata}
-              onConfirm={() => undefined}
-              onReset={() => undefined}
-              confirming
-            />
-            <LoadingPanel />
-          </>
+        {stage.kind === "running" && (
+          <StepRunning
+            appName={stage.listing.surfaceMetadata.appName}
+            llm={stage.listing.capabilities.llm}
+            firecrawl={stage.listing.capabilities.firecrawl}
+          />
         )}
 
-        {stage.kind === "done" && (
-          <>
-            <ScoreCard
-              audit={stage.audit.audit}
-              metadata={stage.audit.surfaceMetadata}
-              usedLlmRefinement={stage.audit.usedLlmRefinement}
-            />
-            <RecommendationSection
-              title="Quick wins"
-              tagline="Ship today"
-              items={stage.audit.audit.quickWins}
-              tone="accent"
-            />
-            <RecommendationSection
-              title="High-impact changes"
-              tagline="Real effort, real lift"
-              items={stage.audit.audit.highImpactChanges}
-              tone="warning"
-            />
-            <RecommendationSection
-              title="Strategic recommendations"
-              tagline="Long-term direction"
-              items={stage.audit.audit.strategicRecommendations}
-              tone="muted"
-            />
-            <CompetitorTable audit={stage.audit.audit} competitors={stage.audit.competitors} />
-            <Evidence url={stage.audit.trackViewUrl} />
-            <button
-              type="button"
-              onClick={reset}
-              className="mt-2 text-sm text-muted hover:text-ink underline-offset-4 hover:underline"
-            >
-              Audit another app
-            </button>
-          </>
+        {stage.kind === "results" && (
+          <ResultsView
+            data={stage.audit}
+            onAuditUrl={submitUrl}
+            onAuditAnother={resetToInput}
+          />
         )}
       </main>
+
+      <StepFooter step={stageToStepId(stage)} />
     </div>
   );
-}
-
-function Header({ onReset, active }: { onReset: () => void; active: boolean }): JSX.Element {
-  return (
-    <header className="w-full max-w-5xl flex items-center justify-between">
-      <button
-        type="button"
-        onClick={onReset}
-        className="flex items-center gap-2.5 group"
-      >
-        <span className="inline-block h-2.5 w-2.5 rounded-sm bg-accent group-hover:bg-accent-soft" />
-        <span className="text-mono text-sm font-medium tracking-tight">aso-audit-agent</span>
-      </button>
-      {active ? (
-        <span className="text-xs text-muted hidden sm:inline">
-          Powered by Mastra · Apple public API
-        </span>
-      ) : null}
-    </header>
-  );
-}
-
-function Pitch({ compact = false }: { compact?: boolean }): JSX.Element {
-  if (compact) {
-    return (
-      <p className="text-sm text-muted">
-        We pulled the surface metadata. Confirm and we&apos;ll run the full audit.
-      </p>
-    );
-  }
-  return (
-    <div className="flex flex-col items-center text-center gap-4 max-w-2xl">
-      <span className="rounded-full border border-border bg-panel px-3 py-1 text-[10px] uppercase tracking-widest text-muted">
-        App Store Optimization · 10-dimension audit
-      </span>
-      <h1 className="text-3xl sm:text-4xl font-semibold leading-tight tracking-tight">
-        Paste an App Store URL. Get a senior ASO review back in seconds.
-      </h1>
-      <p className="text-muted text-base">
-        We fetch the listing, find category competitors, score every dimension that moves
-        installs, and write concrete before / after copy you can ship.
-      </p>
-    </div>
-  );
-}
-
-function FootHint(): JSX.Element {
-  return (
-    <div className="text-xs text-muted flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
-      <span>Try:</span>
-      <ExampleChip url="https://apps.apple.com/us/app/notion-notes-docs-tasks/id1232780281">
-        Notion
-      </ExampleChip>
-      <ExampleChip url="https://apps.apple.com/us/app/things-3/id904237743">Things 3</ExampleChip>
-      <ExampleChip url="https://apps.apple.com/us/app/duolingo-language-lessons/id570060128">
-        Duolingo
-      </ExampleChip>
-    </div>
-  );
-}
-
-function ExampleChip({ url, children }: { url: string; children: React.ReactNode }): JSX.Element {
-  return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noreferrer"
-      className="rounded-md border border-border bg-panel px-2 py-1 hover:border-muted/60 hover:text-ink transition-colors"
-    >
-      {children}
-    </a>
-  );
-}
-
-function LoadingPanel(): JSX.Element {
-  return (
-    <div className="w-full max-w-2xl rounded-2xl border border-border bg-panel shadow-panel p-6 flex items-center gap-3 text-sm text-muted">
-      <Loader2 className="h-4 w-4 animate-spin text-accent" />
-      Fetching listing, finding competitors, scoring ten dimensions…
-    </div>
-  );
-}
-
-function Evidence({ url }: { url: string }): JSX.Element {
-  return (
-    <p className="text-xs text-muted/80 text-center max-w-2xl">
-      Source:{" "}
-      <a href={url} target="_blank" rel="noreferrer" className="underline underline-offset-4">
-        {url}
-      </a>
-      <br />
-      Apple&apos;s private keyword field and screenshot creative aren&apos;t public — those scores
-      are inferred from visible metadata.
-    </p>
-  );
-}
-
-function messageOf(error: unknown): string {
-  return error instanceof Error ? error.message : "Something went wrong.";
 }

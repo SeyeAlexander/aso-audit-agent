@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PublicError } from "../lib/errors.js";
 
 const appStoreLookupResultSchema = z.object({
   trackId: z.number(),
@@ -41,6 +42,15 @@ export interface AppStoreListing extends AppStoreLookupResult {
   appStoreUrl: string;
   htmlSubtitle?: string | undefined;
   htmlDescription?: string | undefined;
+
+  /** Real subtitle scraped from the public App Store page (Apple hides it in Lookup). */
+  subtitle?: string | undefined;
+  /** Promotional text (above-the-fold copy editable in App Store Connect). */
+  promotionalText?: string | undefined;
+  /** "What's New" body for the current version. */
+  whatsNew?: string | undefined;
+  /** Best-effort review/dev-response snippets from the public page. */
+  reviewSnippets?: { body: string; rating?: number; title?: string; developerResponse?: string }[];
 }
 
 export interface SurfaceMetadata {
@@ -63,16 +73,16 @@ export function parseAppStoreUrl(input: string): ParsedAppStoreUrl {
   try {
     url = new URL(input.trim());
   } catch {
-    throw new Error("Please paste a valid Apple App Store URL.");
+    throw new PublicError("Please paste a valid App Store URL.");
   }
 
   if (url.hostname !== "apps.apple.com") {
-    throw new Error("The URL must be from apps.apple.com.");
+    throw new PublicError("The URL must be from apps.apple.com.");
   }
 
   const idMatch = url.pathname.match(/\/id(\d+)/);
   if (!idMatch?.[1]) {
-    throw new Error("Could not find an Apple app id in that URL.");
+    throw new PublicError("Could not find an app id in that URL.");
   }
 
   const country = url.pathname.split("/").filter(Boolean)[0] ?? "us";
@@ -104,7 +114,7 @@ export function parseLookupResponse(payload: unknown): AppStoreLookupResult {
   const result = parsed.results[0];
 
   if (!result) {
-    throw new Error("Apple returned no listing for this app id/country.");
+    throw new PublicError("No app found for that URL — double-check the link.");
   }
 
   return result;

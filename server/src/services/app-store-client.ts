@@ -1,6 +1,7 @@
 import { env } from "../env.js";
 import type { AppStoreListing } from "../domain/app-store.js";
 import { parseAppStoreUrl, parseLookupResponse } from "../domain/app-store.js";
+import { enrichWithFirecrawl } from "./firecrawl-client.js";
 
 export class AppStoreClient {
   async fetchListing(appStoreUrl: string): Promise<AppStoreListing> {
@@ -15,11 +16,20 @@ export class AppStoreClient {
     }
 
     const result = parseLookupResponse(await response.json());
-    const htmlFields = await this.fetchHtmlHints(result.trackViewUrl).catch(() => ({}));
+
+    // Three enrichment sources, in priority order, all best-effort:
+    //   1. iTunes Lookup (above): authoritative numeric metadata
+    //   2. Lightweight HTML hints: og:description, json-ld description
+    //   3. Firecrawl: real subtitle, promo text, What's New, reviews
+    const [htmlFields, firecrawl] = await Promise.all([
+      this.fetchHtmlHints(result.trackViewUrl).catch(() => ({})),
+      enrichWithFirecrawl(result.trackViewUrl).catch(() => ({}))
+    ]);
 
     return {
       ...result,
       ...htmlFields,
+      ...firecrawl,
       country: parsed.country,
       appStoreUrl: parsed.url
     };

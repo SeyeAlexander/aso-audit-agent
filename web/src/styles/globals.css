@@ -2,8 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: dark;
+/* ---------- Theme tokens ---------------------------------------------------
+ * Light + dark are full token sets so we can switch by toggling the
+ * `data-theme` attribute on <html>. RGB triplets so Tailwind's `bg-bg/50` etc.
+ * compose with alpha. Values mirror Layers' public theme.css for brand fit.
+ * ------------------------------------------------------------------------- */
+
+:root,
+[data-theme="light"] {
+  --bg: 247 247 249;
+  --surface: 255 255 255;
+  --elevated: 249 249 251;
+  --sunken: 240 240 242;
+  --border: 223 223 225;
+  --ring: 180 180 184;
+
+  --ink: 23 23 25;
+  --ink-soft: 68 68 70;
+  --muted: 112 112 114;
+
+  --logo: 181 255 107;
+  --primary: 192 255 130;
+  --primary-ink: 73 114 31;
+  /* Step connector accent — used only on the step indicator. */
+  --accent-blue: 130 178 255;
+
+  --danger: 255 175 162;
+  --danger-ink: 225 101 81;
+  --success: 89 230 126;
+  --warning: 255 209 102;
+
+  --dot-bg-opacity: 0.5;
+}
+
+[data-theme="dark"] {
+  --bg: 25 25 27;
+  --surface: 33 33 35;
+  --elevated: 29 29 31;
+  --sunken: 23 23 25;
+  /* Bumped from 46→62 — at 46 outline buttons looked smaller than filled
+   * siblings because the border was almost invisible against bg-surface. */
+  --border: 62 62 64;
+  --ring: 92 92 94;
+
+  --ink: 255 255 255;
+  --ink-soft: 200 200 202;
+  --muted: 146 146 148;
+
+  --logo: 181 255 107;
+  --primary: 181 255 107;
+  --primary-ink: 73 114 31;
+  --accent-blue: 130 178 255;
+
+  --danger: 146 59 46;
+  --danger-ink: 233 84 60;
+  --success: 89 230 126;
+  --warning: 255 209 102;
+
+  --dot-bg-opacity: 0.25;
 }
 
 html,
@@ -12,25 +68,67 @@ body,
   height: 100%;
 }
 
+html {
+  color-scheme: light;
+  background: rgb(var(--bg));
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+}
+
 body {
-  @apply bg-surface text-ink font-sans antialiased;
+  @apply bg-bg text-ink font-sans antialiased;
+  font-feature-settings: "ss01", "cv11";
+  position: relative;
+}
+
+/* Subtle dot pattern — replaces the gradients we had before. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
   background-image: radial-gradient(
-      circle at 20% 0%,
-      rgba(181, 255, 107, 0.05) 0%,
-      transparent 45%
-    ),
-    radial-gradient(circle at 80% 40%, rgba(181, 255, 107, 0.025) 0%, transparent 35%);
-  background-attachment: fixed;
+    rgb(var(--ink) / 0.14) 1px,
+    transparent 1px
+  );
+  background-size: 22px 22px;
+  background-position: 0 0;
+  opacity: var(--dot-bg-opacity);
+  mask-image: linear-gradient(180deg, rgb(0 0 0 / 0.65), transparent 80%);
+  -webkit-mask-image: linear-gradient(180deg, rgb(0 0 0 / 0.65), transparent 80%);
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+  min-height: 100%;
 }
 
 ::selection {
-  background: rgba(181, 255, 107, 0.25);
-  color: #f5f6f7;
+  background: rgb(var(--logo) / 0.4);
+  color: rgb(var(--ink));
+}
+
+:where(button, a, input, [tabindex]):focus-visible {
+  outline: 2px solid rgb(var(--logo));
+  outline-offset: 2px;
+  border-radius: 6px;
 }
 
 @layer utilities {
   .text-mono {
     font-family: theme("fontFamily.mono");
     font-feature-settings: "tnum", "ss01";
+  }
+  .anchor-offset {
+    scroll-margin-top: 88px;
+  }
+  .glass {
+    background-color: rgb(var(--surface) / 0.78);
+    backdrop-filter: saturate(140%) blur(12px);
+    -webkit-backdrop-filter: saturate(140%) blur(12px);
   }
 }
