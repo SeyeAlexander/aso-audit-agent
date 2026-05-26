@@ -5,6 +5,11 @@ chat-style composer, confirm the app, and get a structured, evidence-backed ASO 
 a weighted 0–100 score card, effort-bucketed recommendations with before/after examples,
 and a top-3 competitor comparison.
 
+## Prerequisites
+
+- **Node ≥ 20** (`node -v`) — the build relies on modern type-stripping.
+- Ports **5173** (web) and **5174** (API) free.
+
 ## Setup
 
 ```bash
