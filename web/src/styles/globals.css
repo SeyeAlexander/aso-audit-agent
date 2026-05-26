@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-surface text-ink font-sans antialiased;
+  background-image: radial-gradient(
+      circle at 20% 0%,
+      rgba(181, 255, 107, 0.05) 0%,
+      transparent 45%
+    ),
+    radial-gradient(circle at 80% 40%, rgba(181, 255, 107, 0.025) 0%, transparent 35%);
+  background-attachment: fixed;
+}
+
+::selection {
+  background: rgba(181, 255, 107, 0.25);
+  color: #f5f6f7;
+}
+
+@layer utilities {
+  .text-mono {
+    font-family: theme("fontFamily.mono");
+    font-feature-settings: "tnum", "ss01";
+  }
+}
