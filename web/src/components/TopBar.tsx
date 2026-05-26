@@ -15,7 +15,7 @@ export function TopBar({ onHome }: Props): JSX.Element {
           aria-label="ASO Audit Agent — home"
         >
           <span className="inline-block h-2.5 w-2.5 rounded-sm bg-logo group-hover:bg-logo/80 transition-colors" />
-          <span className="text-mono text-[13px] font-medium tracking-tight text-ink">
+          <span className="text-mono text-[14px] font-medium tracking-tight text-ink">
             aso-audit-agent
           </span>
         </button>

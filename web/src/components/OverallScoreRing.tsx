@@ -28,7 +28,7 @@ export function OverallScoreRing({ score, size = 132, thickness = 10 }: Props): 
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="rgb(var(--logo))"
+          stroke="rgb(var(--accent-green))"
           strokeWidth={thickness}
           fill="none"
           strokeLinecap="round"

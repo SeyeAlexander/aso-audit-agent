@@ -20,7 +20,7 @@ export function CompetitorTable({ audit, competitors, onAuditUrl }: Props): JSX.
       </CardHeader>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-[13px]">
+        <table className="w-full text-[14px]">
           <thead className="bg-elevated/40 text-left text-[12px] uppercase tracking-widest text-muted">
             <tr>
               <th className="px-6 py-3 font-medium">Dimension</th>
@@ -94,7 +94,7 @@ function CompetitorCard({
           <div className="h-11 w-11 rounded-lg bg-surface shrink-0" />
         )}
         <div className="min-w-0 flex-1">
-          <p className="text-[13px] font-medium text-ink leading-tight">
+          <p className="text-[14px] font-medium text-ink leading-tight">
             <span className="truncate inline-block max-w-full" title={competitor.name}>
               {competitor.name}
             </span>
@@ -121,10 +121,10 @@ function CompetitorCard({
           onClick={onAudit}
           className={cn(
             "inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface",
-            "px-2.5 h-8 text-[12px] text-ink-soft hover:text-ink hover:bg-elevated hover:border-logo/40 transition-colors"
+            "px-2.5 h-8 text-[12px] text-ink-soft hover:text-ink hover:bg-elevated hover:border-accent-green/50 transition-colors"
           )}
         >
-          <Sparkles className="h-3 w-3 text-logo/80" />
+          <Sparkles className="h-3 w-3 text-accent-green/90" />
           Audit this
         </button>
       </div>

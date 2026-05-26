@@ -67,13 +67,13 @@ function DimensionRow({ row }: { row: DimensionScore }): JSX.Element {
         className="w-full grid grid-cols-[110px_1fr_auto] sm:grid-cols-[150px_1fr_auto] items-center gap-3 px-2 py-2.5 text-left"
       >
         <div className="flex flex-col">
-          <span className="text-[13px] text-ink">{DIMENSION_LABELS[row.dimension]}</span>
+          <span className="text-[14px] text-ink">{DIMENSION_LABELS[row.dimension]}</span>
           <span className="text-[12px] uppercase tracking-widest text-muted">
             {DIMENSION_WEIGHTS[row.dimension]}% weight
           </span>
         </div>
         <ScoreBar value={row.score} />
-        <span className="flex items-center gap-1.5 text-mono text-[13px] tabular-nums text-ink-soft w-16 text-right justify-end">
+        <span className="flex items-center gap-1.5 text-mono text-[14px] tabular-nums text-ink-soft w-16 text-right justify-end">
           {row.score.toFixed(1)}
           <ChevronDown
             className={cn(
@@ -85,7 +85,7 @@ function DimensionRow({ row }: { row: DimensionScore }): JSX.Element {
       </button>
       {open ? (
         <div className="pb-3 pl-3 sm:pl-[162px] pr-3 sm:pr-4 -mt-1">
-          <ul className="flex flex-col gap-2 border-l border-logo/35 pl-3 text-[13px] text-ink-soft leading-relaxed">
+          <ul className="flex flex-col gap-2 border-l border-accent-green/40 pl-3 text-[14px] text-ink-soft leading-relaxed">
             {row.evidence.map((line, index) => (
               <li key={index}>
                 <span className="text-muted mr-1">·</span>
@@ -104,7 +104,7 @@ function ScoreBar({ value }: { value: number }): JSX.Element {
   return (
     <div className="relative h-1.5 rounded-full bg-elevated overflow-hidden">
       <div
-        className="absolute inset-y-0 left-0 rounded-full bg-logo"
+        className="absolute inset-y-0 left-0 rounded-full bg-accent-green"
         style={{ width: `${pct}%`, transition: "width 700ms cubic-bezier(0.4, 0, 0.2, 1)" }}
       />
     </div>

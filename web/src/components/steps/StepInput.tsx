@@ -82,11 +82,11 @@ export function StepInput({
         <div
           className={cn(
             "w-full rounded-2xl bg-ink/[0.04] dark:bg-ink/[0.06] p-2",
-            "border border-transparent focus-within:border-logo/25 transition-colors"
+            "border border-transparent focus-within:border-accent-green/30 transition-colors"
           )}
         >
           <div className="flex items-center gap-2 px-3 pt-2 pb-1">
-            <Sparkles className="h-3.5 w-3.5 text-logo/80" />
+            <Sparkles className="h-3.5 w-3.5 text-accent-green/90" />
             <span className="text-[12px] text-muted">Paste any apps.apple.com URL</span>
           </div>
 

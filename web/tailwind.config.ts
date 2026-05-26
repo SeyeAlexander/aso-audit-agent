@@ -23,6 +23,7 @@ export default {
         logo: "rgb(var(--logo) / <alpha-value>)",
         primary: "rgb(var(--primary) / <alpha-value>)",
         "primary-ink": "rgb(var(--primary-ink) / <alpha-value>)",
+        "accent-green": "rgb(var(--accent-green) / <alpha-value>)",
         "accent-blue": "rgb(var(--accent-blue) / <alpha-value>)",
         danger: "rgb(var(--danger) / <alpha-value>)",
         "danger-ink": "rgb(var(--danger-ink) / <alpha-value>)",

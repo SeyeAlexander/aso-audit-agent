@@ -9,7 +9,7 @@ interface Props extends HTMLAttributes<HTMLSpanElement> {
 
 const tones: Record<Tone, string> = {
   default: "border-border bg-elevated text-muted",
-  accent: "border-logo/40 bg-logo/10 text-ink",
+  accent: "border-accent-green/45 bg-accent-green/15 text-ink",
   warning: "border-warning/40 bg-warning/10 text-ink",
   danger: "border-danger/40 bg-danger/10 text-danger-ink",
   mono: "border-border bg-elevated text-ink-soft font-mono"

@@ -23,7 +23,7 @@ export function CardHeader({ className, ...rest }: HTMLAttributes<HTMLDivElement
 }
 
 export function CardTitle({ className, ...rest }: HTMLAttributes<HTMLHeadingElement>): JSX.Element {
-  return <h2 className={cn("text-[15px] font-semibold tracking-tight", className)} {...rest} />;
+  return <h2 className={cn("text-[16px] font-semibold tracking-tight", className)} {...rest} />;
 }
 
 export function CardSubtle({ className, ...rest }: HTMLAttributes<HTMLSpanElement>): JSX.Element {

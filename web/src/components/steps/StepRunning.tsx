@@ -139,15 +139,15 @@ export function StepRunning({ appName, llm, firecrawl }: Props): JSX.Element {
 function StageIcon({ state }: { state: "done" | "active" | "pending" | "skipped" }): JSX.Element {
   if (state === "done") {
     return (
-      <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-logo text-[rgb(23_23_25)]">
+      <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-accent-green text-white dark:text-[rgb(23_23_25)]">
         <Check className="h-3 w-3" />
       </span>
     );
   }
   if (state === "active") {
     return (
-      <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-logo/60">
-        <Loader2 className="h-3 w-3 animate-spin text-logo/80" />
+      <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-accent-green/60">
+        <Loader2 className="h-3 w-3 animate-spin text-accent-green/90" />
       </span>
     );
   }

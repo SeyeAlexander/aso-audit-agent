@@ -24,12 +24,17 @@
   --logo: 181 255 107;
   --primary: 192 255 130;
   --primary-ink: 73 114 31;
+  /* Deeper green for faint/structural accents (tints, thin borders, progress
+   * fills, ring strokes). The lime above goes lemon/neon and washes out on a
+   * light background; this reads as a confident green there. Dark mode keeps
+   * the lime (see below) since it glows fine on dark surfaces. */
+  --accent-green: 60 165 84;
   /* Step connector accent — used only on the step indicator. */
   --accent-blue: 130 178 255;
 
   --danger: 255 175 162;
   --danger-ink: 225 101 81;
-  --success: 89 230 126;
+  --success: 47 163 86;
   --warning: 255 209 102;
 
   --dot-bg-opacity: 0.5;
@@ -52,6 +57,8 @@
   --logo: 181 255 107;
   --primary: 181 255 107;
   --primary-ink: 73 114 31;
+  /* Dark mode: keep the lime for accents too — it glows on dark surfaces. */
+  --accent-green: 181 255 107;
   --accent-blue: 130 178 255;
 
   --danger: 146 59 46;

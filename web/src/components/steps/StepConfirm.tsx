@@ -109,7 +109,7 @@ export function StepConfirm({ data, onConfirm, onReset }: Props): JSX.Element {
               onClick={onReset}
               className={cn(
                 "inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface",
-                "px-3 h-9 text-[13px] text-ink-soft hover:text-ink hover:bg-elevated transition-colors"
+                "px-3 h-9 text-[14px] text-ink-soft hover:text-ink hover:bg-elevated transition-colors"
               )}
             >
               <RotateCcw className="h-3.5 w-3.5" />
@@ -119,7 +119,7 @@ export function StepConfirm({ data, onConfirm, onReset }: Props): JSX.Element {
               type="button"
               onClick={onConfirm}
               className={cn(
-                "inline-flex items-center gap-1.5 rounded-lg bg-logo px-4 h-9 text-[13px] font-medium",
+                "inline-flex items-center gap-1.5 rounded-lg bg-logo px-4 h-9 text-[14px] font-medium",
                 "text-[rgb(23_23_25)] hover:bg-logo/88 active:bg-logo/70 transition-colors"
               )}
             >
@@ -172,7 +172,7 @@ function KeyExcerpt({ label, value }: { label: string; value: string }): JSX.Ele
   return (
     <div className="rounded-lg border border-border bg-elevated px-3 py-2.5 sm:col-span-2">
       <div className="text-[12px] uppercase tracking-widest text-muted">{label}</div>
-      <p className="mt-1 text-[13px] text-ink-soft line-clamp-3">{value}</p>
+      <p className="mt-1 text-[14px] text-ink-soft line-clamp-3">{value}</p>
     </div>
   );
 }

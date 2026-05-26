@@ -27,7 +27,7 @@ export function RecommendationSection({ title, tagline, items }: Props): JSX.Ele
               </span>
               <h4 className="text-[14px] font-semibold leading-snug text-ink min-w-0">{item.title}</h4>
             </div>
-            <p className="text-[13px] text-ink-soft leading-relaxed pl-0 sm:pl-8">{item.recommendation}</p>
+            <p className="text-[14px] text-ink-soft leading-relaxed pl-0 sm:pl-8">{item.recommendation}</p>
             {item.evidence ? (
               <p className="text-[12px] text-muted pl-0 sm:pl-8">
                 <span className="uppercase tracking-widest text-[12px] text-muted/80">Evidence · </span>
@@ -110,14 +110,14 @@ function BeforeAfter({
     <div
       className={cn(
         "rounded-lg border bg-elevated px-3 py-2.5",
-        accent ? "border-logo/40" : "border-border"
+        accent ? "border-accent-green/45" : "border-border"
       )}
     >
       <div className="flex items-center gap-1.5 text-[12px] uppercase tracking-widest">
         <span className={accent ? "text-ink" : "text-muted"}>{label}</span>
         {accent ? <ArrowRight className="h-3 w-3 text-ink-soft" /> : null}
       </div>
-      <p className={cn("mt-1 text-[13px]", accent ? "text-ink" : "text-ink-soft")}>{value}</p>
+      <p className={cn("mt-1 text-[14px]", accent ? "text-ink" : "text-ink-soft")}>{value}</p>
     </div>
   );
 }

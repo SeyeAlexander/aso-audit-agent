@@ -58,9 +58,9 @@ export function StepFooter({ step }: Props): JSX.Element {
                   className={cn(
                     "mx-2 sm:mx-4 mb-5 h-px w-10 sm:w-16 rounded-full transition-colors",
                     done
-                      ? "bg-logo/55"
+                      ? "bg-accent-green/60"
                       : active
-                        ? "bg-logo/30"
+                        ? "bg-accent-green/35"
                         : "bg-border"
                   )}
                 />

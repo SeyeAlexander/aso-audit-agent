@@ -47,7 +47,7 @@ export function ResultsView({ data, onAuditUrl, onAuditAnother }: Props): JSX.El
                 key={section.id}
                 href={`#${section.id}`}
                 className={cn(
-                  "group flex items-center justify-between rounded-lg px-3 py-2 text-[13px]",
+                  "group flex items-center justify-between rounded-lg px-3 py-2 text-[14px]",
                   "transition-colors",
                   activeId === section.id
                     ? "bg-elevated text-ink"
@@ -68,10 +68,10 @@ export function ResultsView({ data, onAuditUrl, onAuditAnother }: Props): JSX.El
             onClick={onAuditAnother}
             className={cn(
               "mt-2 inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface",
-              "px-3 h-9 text-[13px] text-ink-soft hover:text-ink hover:bg-elevated hover:border-logo/40 transition-colors"
+              "px-3 h-9 text-[14px] text-ink-soft hover:text-ink hover:bg-elevated hover:border-accent-green/50 transition-colors"
             )}
           >
-            <Plus className="h-3.5 w-3.5 text-logo/80" />
+            <Plus className="h-3.5 w-3.5 text-accent-green/90" />
             Audit another app
           </button>
         </div>
@@ -183,7 +183,7 @@ function EvidenceFooter({ data }: { data: AuditResponse }): JSX.Element {
         <CardTitle>Source &amp; caveats</CardTitle>
         <CardSubtle>How this audit was produced</CardSubtle>
       </CardHeader>
-      <div className="px-5 py-4 flex flex-col gap-3 text-[13px] text-ink-soft leading-relaxed">
+      <div className="px-5 py-4 flex flex-col gap-3 text-[14px] text-ink-soft leading-relaxed">
         <p>
           Source listing:{" "}
           <a
