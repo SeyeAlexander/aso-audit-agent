@@ -44,8 +44,9 @@ NVIDIA_API_KEY=...
 NVIDIA_BASE_URL=https://integrate.api.nvidia.com/v1
 NVIDIA_MODEL=meta/llama-3.1-70b-instruct
 
-# App Store page scraping
+# App Store page scraping (Firecrawl has a free tier)
 FIRECRAWL_API_KEY=...
+FIRECRAWL_BASE_URL=https://api.firecrawl.dev/v1
 ```
 
 To use a different LLM host (OpenAI, Together, Groq, etc.), set the `OPENAI_COMPATIBLE_*`
