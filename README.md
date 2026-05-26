@@ -14,7 +14,7 @@ and a top-3 competitor comparison.
 
 ```bash
 npm install
-cp .env.example .env   # optional — the app runs with zero keys
+cp .env.example .env   # add keys to unlock enrichment — see Configuration
 npm run dev
 ```
 
@@ -25,22 +25,31 @@ npm run dev
 
 Open the web UI and paste any `apps.apple.com` listing URL.
 
-**No keys are required.** Apple's public iTunes endpoints need no auth, so the full
-deterministic audit works out of the box. Two optional providers add depth:
+## Configuration
+
+The app is built as **progressive enhancement**: a complete audit with no setup, plus two
+provider integrations that are fully wired in and switch on automatically when their keys
+are present. Each layer degrades gracefully — a missing or failing provider never breaks
+an audit, it just narrows the evidence (and the report says so).
+
+| Tier | Keys needed | What you get |
+|---|---|---|
+| **Baseline** (default) | none | Full deterministic 10-dimension audit, competitor comparison, and recommendations with before/after — straight from Apple's public iTunes endpoints, no auth. |
+| **+ LLM refinement** | `NVIDIA_API_KEY` *(or any `OPENAI_COMPATIBLE_*`)* | The ASO strategist agent rewrites recommendation prose and adds per-dimension qualitative notes in a senior-consultant voice. Deterministic scores stay frozen. |
+| **+ Firecrawl** | `FIRECRAWL_API_KEY` | Recovers fields Apple hides from the Lookup API — real subtitle, promotional text, "What's New", and review snippets — enriching the dimensions that depend on them. |
 
 ```bash
-# Optional: LLM refinement of recommendation prose (NVIDIA NIM free tier)
+# LLM refinement (NVIDIA NIM has a free tier; any OpenAI-compatible host works)
 NVIDIA_API_KEY=...
 NVIDIA_BASE_URL=https://integrate.api.nvidia.com/v1
 NVIDIA_MODEL=meta/llama-3.1-70b-instruct
 
-# Optional: Firecrawl recovers fields Apple hides from the Lookup API
-# (real subtitle, promotional text, "What's New", review snippets)
+# App Store page scraping
 FIRECRAWL_API_KEY=...
 ```
 
-Any OpenAI-compatible provider works too — see the `OPENAI_COMPATIBLE_*` vars in
-`.env.example`. When set, they take precedence over NVIDIA.
+To use a different LLM host (OpenAI, Together, Groq, etc.), set the `OPENAI_COMPATIBLE_*`
+vars in `.env.example` — they take precedence over NVIDIA when present.
 
 ## User flow
 
