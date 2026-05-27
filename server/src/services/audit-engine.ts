@@ -374,7 +374,7 @@ function buildQuickWins(listing: AppStoreListing, scoreCard: DimensionScore[]): 
   const keywords = uniqueKeywords(`${listing.description ?? ""} ${category}`, 6);
   const titleAfter = buildTitleRewrite(title, keywords);
   const subtitleAfter = buildSubtitleRewrite(listing, keywords);
-  const descriptionBefore = truncate((listing.description ?? "").split("\n").find(Boolean) ?? "No clear opening line found.", 120);
+  const descriptionBefore = truncate((listing.description ?? "").split("\n").find(Boolean) ?? "", 120);
 
   return [
     {
@@ -388,7 +388,7 @@ function buildQuickWins(listing: AppStoreListing, scoreCard: DimensionScore[]): 
       title: "Use the subtitle as a benefit promise",
       evidence: findEvidence(scoreCard, "subtitle"),
       recommendation: "Make the subtitle specific enough to rank and persuasive enough to earn the tap.",
-      before: getSubtitle(listing) ?? "No public subtitle detected",
+      before: getSubtitle(listing),
       after: subtitleAfter
     },
     {
@@ -414,7 +414,7 @@ function buildHighImpactChanges(listing: AppStoreListing, scoreCard: DimensionSc
       title: "Run a keyword-field refresh",
       evidence: findEvidence(scoreCard, "keywordField"),
       recommendation: "Use App Store Connect keyword slots for non-duplicated, high-intent terms not already covered by the title/subtitle.",
-      before: keywords.slice(0, 6).join(", ") || "No keyword set visible",
+      before: keywords.slice(0, 6).join(", ") || undefined,
       after: keywords.concat(["tracker", "planner", "manager"]).slice(0, 10).join(", ")
     },
     {

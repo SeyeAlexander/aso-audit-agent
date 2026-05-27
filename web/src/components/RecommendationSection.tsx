@@ -36,8 +36,8 @@ export function RecommendationSection({ title, tagline, items }: Props): JSX.Ele
             ) : null}
             {item.before || item.after ? (
               <div className="mt-1 pl-0 sm:pl-8 grid gap-2 sm:grid-cols-2">
-                {item.before ? <BeforeAfter label="Before" value={item.before} /> : null}
-                {item.after ? <BeforeAfter label="After" value={item.after} accent /> : null}
+                <BeforeAfter label="Before" value={item.before} />
+                <BeforeAfter label="After" value={item.after} accent />
               </div>
             ) : null}
           </li>
@@ -103,9 +103,10 @@ function BeforeAfter({
   accent = false
 }: {
   label: string;
-  value: string;
+  value?: string | undefined;
   accent?: boolean;
 }): JSX.Element {
+  const isEmpty = !value || value.trim() === "";
   return (
     <div
       className={cn(
@@ -117,7 +118,14 @@ function BeforeAfter({
         <span className={accent ? "text-ink" : "text-muted"}>{label}</span>
         {accent ? <ArrowRight className="h-3 w-3 text-ink-soft" /> : null}
       </div>
-      <p className={cn("mt-1 text-[14px]", accent ? "text-ink" : "text-ink-soft")}>{value}</p>
+      <p
+        className={cn(
+          "mt-1 text-[14px]",
+          isEmpty ? "text-muted" : accent ? "text-ink" : "text-ink-soft"
+        )}
+      >
+        {isEmpty ? "N/A" : value}
+      </p>
     </div>
   );
 }
