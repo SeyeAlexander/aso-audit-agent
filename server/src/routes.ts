@@ -77,7 +77,7 @@ export function registerRoutes(app: Express): void {
       throw new Error(reason ?? "ASO audit workflow did not produce a result.");
     }
 
-    const { listing, competitors, audit, usedLlmRefinement } = outcome.result;
+    const { listing, competitors, audit, agentLed } = outcome.result;
 
     res.json({
       surfaceMetadata: toSurfaceMetadata(listing),
@@ -91,7 +91,7 @@ export function registerRoutes(app: Express): void {
         ratingCount: c.userRatingCount,
         url: c.trackViewUrl
       })),
-      usedLlmRefinement,
+      agentLed,
       capabilities: {
         llm: hasConfiguredModel(),
         firecrawl: hasFirecrawl()

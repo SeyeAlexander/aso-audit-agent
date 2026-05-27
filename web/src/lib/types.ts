@@ -117,6 +117,6 @@ export interface AuditResponse {
   trackViewUrl: string;
   audit: AsoAudit;
   competitors: CompetitorSummary[];
-  usedLlmRefinement: boolean;
+  agentLed: boolean;
   capabilities: Capabilities;
 }

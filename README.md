@@ -27,16 +27,17 @@ Open the web UI and paste any `apps.apple.com` listing URL.
 
 ## Configuration
 
-The app is built as **progressive enhancement**: a complete audit with no setup, plus two
-provider integrations that are fully wired in and switch on automatically when their keys
-are present. Each layer degrades gracefully — a missing or failing provider never breaks
-an audit, it just narrows the evidence (and the report says so).
+The audit is **agent-led**: a Mastra agent applies the ASO methodology skill to score the
+listing and write the recommendations. A deterministic engine measures the facts the agent
+reasons over, validates its output (clamps scores, recomputes the weighted total), and
+stands in as a fallback. Both provider keys are free tiers and switch on automatically; the
+app degrades gracefully if either is missing.
 
-| Tier                   | Keys needed                                        | What you get                                                                                                                                                         |
-| ---------------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Baseline** (default) | none                                               | Full deterministic 10-dimension audit, competitor comparison, and recommendations with before/after — straight from Apple's public iTunes endpoints, no auth.        |
-| **+ LLM refinement**   | `NVIDIA_API_KEY` _(or any `OPENAI_COMPATIBLE_*`)_   | The ASO strategist agent rewrites recommendation prose and adds per-dimension qualitative notes in a senior-consultant voice. Deterministic scores stay frozen.      |
-| **+ Firecrawl**        | `FIRECRAWL_API_KEY`                                | Recovers fields Apple hides from the Lookup API — real subtitle, promotional text, "What's New", and review snippets — enriching the dimensions that depend on them. |
+| Layer | Key | What it does |
+| --- | --- | --- |
+| **The agent** (set this) | `NVIDIA_API_KEY` (or any OpenAI-compatible host) | The ASO Strategist agent scores all 10 dimensions and writes the recommendations using the methodology skill. This is the real audit. |
+| **Firecrawl** (recommended) | `FIRECRAWL_API_KEY` | Recovers fields Apple's Lookup API hides — subtitle, promotional text, "What's New", review snippets — so the agent has more evidence to work with. |
+| **Fallback** (no keys) | none | A deterministic engine produces a complete 10-dimension audit from Apple's public endpoints. Used automatically when no LLM key is set, or if the agent call fails. |
 
 ```bash
 # LLM refinement (NVIDIA NIM has a free tier; any OpenAI-compatible host works)
@@ -57,9 +58,10 @@ vars in `.env.example` — they take precedence over NVIDIA when present.
 1. **Paste** an Apple App Store URL into the composer.
 2. **Confirm** — the app fetches surface metadata (name, developer, icon, category,
    country) within ~300ms and asks _"Is this the app you want audited?"_
-3. **Run** — on confirmation, the Mastra workflow fetches full listing evidence, finds
-   2–3 same-category competitors, scores all ten ASO dimensions, and (if a model key is
-   set) refines the prose.
+3. **Run** — on confirmation, the Mastra workflow fetches the full listing, finds 2–3
+   same-category competitors, measures every dimension, then the ASO Strategist agent
+   scores all ten dimensions and writes the recommendations. (With no model key it falls
+   back to deterministic scoring.)
 4. **Review** — a structured report: score card, Quick Wins, High-Impact Changes,
    Strategic Recommendations, and a competitor comparison table. Your last five audits
    are kept in `localStorage` and re-open instantly from the home screen.
@@ -81,21 +83,23 @@ Output matches the requested format:
 ## Architecture
 
 Mastra is used as application architecture, not decoration — tools own external actions,
-the workflow owns orchestration, the agent owns recommendation refinement, and the
-workspace skill owns audit methodology.
+the workflow owns orchestration, the agent owns the audit (scoring + recommendations), and
+the workspace skill owns the methodology the agent follows.
 
 - `server/src/mastra/tools.ts` — Mastra tools: `fetchAppStoreListingTool`,
-  `findAppStoreCompetitorsTool`, `scoreAsoAuditTool`.
-- `server/src/mastra/workflows.ts` — the end-to-end workflow composing the tools and the
-  optional parallel agent-refinement step.
-- `server/src/mastra/agents.ts` — the ASO strategist agent; uses a model only when
-  provider credentials are configured.
-- `skills/aso-audit-methodology/SKILL.md` — workspace skill documenting the scoring rules
-  and recommendation standards.
+  `findAppStoreCompetitorsTool`, `scoreAsoAuditTool` (the last measures the facts and
+  produces the deterministic fallback).
+- `server/src/mastra/workflows.ts` — the end-to-end workflow: fetch → competitors →
+  measure → the agent-audit step (two parallel LLM passes: scoring + recommendations),
+  with deterministic guardrails and fallback.
+- `server/src/mastra/agents.ts` — the ASO Strategist agent (model + methodology skill +
+  tools); it scores the listing and writes the recommendations.
+- `skills/aso-audit-methodology/SKILL.md` — workspace skill: the methodology the agent
+  applies to score and recommend.
 - `server/src/services/app-store-client.ts` — Apple public API client (iTunes
   Lookup/Search) plus lightweight page-hint and Firecrawl enrichment.
-- `server/src/services/audit-engine.ts` — deterministic, typed ASO scoring and
-  recommendation engine.
+- `server/src/services/audit-engine.ts` — deterministic ASO engine: measures the facts the
+  agent reasons over and serves as the validated fallback.
 - `web/src` — React + Tailwind UI (chat-style input → confirm → progress → report).
 
 ## Decisions I made (where the brief left it to me)
@@ -108,18 +112,21 @@ the brief itself asks to "present the recommendations in a way that's actually n
 look at," and a chat transcript buries earlier sections behind scroll. The required
 touchpoints (paste → confirm "is this the app?" → audit) are all preserved.
 
-**Deterministic engine is the source of truth; the LLM only refines prose.** Scores come
-from a typed scoring engine, never from the model. The agent rewrites recommendation
-wording and adds qualitative notes, then the result is re-validated through Zod so a
-misbehaving model can't corrupt the report. This keeps audits reproducible across the
-unseen apps the reviewers will run — and means the app produces a complete audit with no
-LLM key at all.
+**The agent performs the audit; the deterministic engine is its guardrail and fallback.**
+The brief's rubric reads as an agent's instructions ("You are an expert in ASO…") and asks
+for idiomatic agents + skills — so the ASO Strategist agent does the judging: it scores all
+ten dimensions and writes the recommendations using the methodology skill. The deterministic
+engine plays three supporting roles: it **measures** the facts the agent reasons over; it
+**guards** the output (clamps every score to 0–10 and recomputes the weighted /100 itself —
+the model's arithmetic is never trusted) and re-validates the shape through Zod; and it is
+the **fallback** — with no LLM key, or if the agent call fails, it returns a complete audit
+so the app still works on any URL.
 
-**Apple public endpoints first; Firecrawl and the LLM are additive.** The iTunes Lookup
-API needs no auth and works on any listing, so it's the backbone. Firecrawl recovers
-fields Apple hides (subtitle, promo text, "What's New", reviews) and the LLM polishes
-copy — but both are optional, and their absence degrades gracefully with an explicit note
-in the affected dimensions rather than an error.
+**Apple public endpoints are the backbone; Firecrawl enriches.** The iTunes Lookup API
+needs no auth and works on any listing, so it's the data backbone. Firecrawl recovers
+fields Apple hides (subtitle, promo text, "What's New", reviews) so the agent has more
+evidence — but it's optional, and its absence degrades gracefully with an explicit note in
+the affected dimensions rather than an error.
 
 **The brief's weights sum to 110%.** I preserved the relative importance and normalized
 the total to exactly 100 so the overall score can't exceed 100.

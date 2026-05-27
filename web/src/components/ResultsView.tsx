@@ -86,7 +86,7 @@ export function ResultsView({ data, onAuditUrl, onAuditAnother }: Props): JSX.El
           <ScoreCard
             audit={data.audit}
             metadata={data.surfaceMetadata}
-            usedLlmRefinement={data.usedLlmRefinement}
+            agentLed={data.agentLed}
           />
         </section>
 
@@ -156,8 +156,8 @@ function OverviewCard({ data }: { data: AuditResponse }): JSX.Element {
             </div>
             <div className="flex items-center gap-1.5 shrink-0">
               <Pill tone="accent">{Math.round(data.audit.overallScore)}/100</Pill>
-              <Pill tone={data.usedLlmRefinement ? "accent" : "default"}>
-                {data.usedLlmRefinement ? "LLM refined" : "Deterministic"}
+              <Pill tone={data.agentLed ? "accent" : "default"}>
+                {data.agentLed ? "Agent-led" : "Deterministic"}
               </Pill>
             </div>
           </div>
@@ -197,11 +197,13 @@ function EvidenceFooter({ data }: { data: AuditResponse }): JSX.Element {
           </a>
         </p>
         <p className="text-muted">
-          Scores are produced by a deterministic engine that reads Apple's iTunes Lookup API
-          {data.capabilities.firecrawl ? ", augmented with Firecrawl page scraping for subtitle, promotional text, and What's New" : " (no Firecrawl key configured)"}.
-          {data.usedLlmRefinement
-            ? " The ASO Strategist agent (NVIDIA NIM) added qualitative notes per dimension and rewrote recommendation prose; deterministic scores were preserved."
-            : " The LLM refinement layer was skipped — recommendation copy is the deterministic engine's first pass."}
+          {data.agentLed
+            ? "The ASO Strategist agent scored all ten dimensions and wrote the recommendations, applying the methodology skill to facts measured from Apple's iTunes Lookup API"
+            : "Scores come from the deterministic ASO engine reading Apple's iTunes Lookup API"}
+          {data.capabilities.firecrawl ? ", augmented with Firecrawl page scraping for subtitle, promotional text, and What's New" : ""}.
+          {data.agentLed
+            ? " A deterministic engine measured those facts, clamped the agent's scores to 0–10, and recomputed the weighted score out of 100 as a guardrail."
+            : " No LLM key was configured, so the agent layer was skipped and this is the deterministic baseline."}
         </p>
         <p className="text-muted">
           Apple's private 100-character keyword field is App Store Connect–only, so that dimension

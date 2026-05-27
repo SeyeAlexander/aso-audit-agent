@@ -37,7 +37,7 @@ export const findAppStoreCompetitorsTool = createTool({
 export const scoreAsoAuditTool = createTool({
   id: "score-aso-audit",
   description:
-    "Run the deterministic 10-dimension ASO scoring engine and produce a complete audit (score card, quick wins, high-impact changes, strategic recommendations, competitor comparison).",
+    "Measure all 10 ASO dimensions deterministically from the listing and competitors. Produces the measured facts plus a complete deterministic baseline audit, used as the agent's input and as the fallback when no LLM is configured.",
   inputSchema: competitorSetSchema,
   outputSchema: scoredAuditSchema,
   execute: async ({ listing, competitors }) => {

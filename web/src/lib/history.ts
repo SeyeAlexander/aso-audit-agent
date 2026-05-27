@@ -11,7 +11,7 @@ export interface HistoryEntry {
   iconUrl?: string;
   appStoreUrl: string;
   overallScore: number;
-  usedLlmRefinement: boolean;
+  agentLed: boolean;
   timestamp: number;
   /**
    * Full audit payload, cached so a "Recent audits" chip can re-open the report
@@ -75,7 +75,7 @@ export function useAuditHistory(): {
       ...(audit.surfaceMetadata.iconUrl ? { iconUrl: audit.surfaceMetadata.iconUrl } : {}),
       appStoreUrl: audit.trackViewUrl,
       overallScore: audit.audit.overallScore,
-      usedLlmRefinement: audit.usedLlmRefinement,
+      agentLed: audit.agentLed,
       timestamp: Date.now(),
       audit
     };

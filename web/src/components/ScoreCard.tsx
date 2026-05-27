@@ -15,10 +15,10 @@ import { cn } from "@/lib/cn";
 interface Props {
   audit: AsoAudit;
   metadata: SurfaceMetadata;
-  usedLlmRefinement: boolean;
+  agentLed: boolean;
 }
 
-export function ScoreCard({ audit, metadata, usedLlmRefinement }: Props): JSX.Element {
+export function ScoreCard({ audit, metadata, agentLed }: Props): JSX.Element {
   return (
     <Card>
       <CardHeader>
@@ -37,8 +37,8 @@ export function ScoreCard({ audit, metadata, usedLlmRefinement }: Props): JSX.El
             </CardSubtle>
           </div>
         </div>
-        <Pill tone={usedLlmRefinement ? "accent" : "default"}>
-          {usedLlmRefinement ? "LLM refined" : "Deterministic"}
+        <Pill tone={agentLed ? "accent" : "default"}>
+          {agentLed ? "Agent-led" : "Deterministic"}
         </Pill>
       </CardHeader>
 

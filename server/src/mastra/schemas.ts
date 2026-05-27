@@ -32,14 +32,16 @@ export const scoredAuditSchema = z.object({
   audit: asoAuditSchema
 });
 
-export const refinedAuditSchema = z.object({
+export const auditResultSchema = z.object({
   listing: listingSchema,
   competitors: z.array(listingSchema),
   audit: asoAuditSchema,
-  usedLlmRefinement: z.boolean()
+  // True when the agent produced the audit; false when we fell back to the
+  // deterministic engine (no LLM key, or the agent failed/returned junk).
+  agentLed: z.boolean()
 });
 
 export type FetchedListing = z.infer<typeof fetchedListingSchema>;
 export type CompetitorSet = z.infer<typeof competitorSetSchema>;
 export type ScoredAudit = z.infer<typeof scoredAuditSchema>;
-export type RefinedAudit = z.infer<typeof refinedAuditSchema>;
+export type AuditResult = z.infer<typeof auditResultSchema>;

@@ -10,24 +10,26 @@ import {
 const methodology = loadAsoAuditMethodology();
 
 /**
- * The strategist agent is the prose layer of the system. The deterministic
- * audit engine produces the numbers; the agent rewrites titles, evidence
- * notes, and before/after copy in a senior ASO consultant voice.
+ * The strategist agent performs the audit. It receives the measured facts for
+ * a listing (character counts, slot usage, ratings, competitor coverage) and
+ * applies the methodology skill to do the judgment work: it assigns every
+ * dimension's 0-10 score and writes the prioritized recommendations.
  *
- * Tools are registered so the agent could *also* be invoked standalone for
- * follow-up questions ("re-fetch this listing", "rescore for the UK store"),
- * but in the audit workflow we use it purely for structured refinement.
+ * The deterministic engine produces those facts and acts as a guardrail (we
+ * clamp the agent's scores and recompute the weighted total ourselves) and as
+ * a fallback when no model is configured. Tools are registered so the agent
+ * can also be driven standalone (re-fetch a listing, rescore for another
+ * store); the audit workflow orchestrates the tools itself for reliability.
  */
 export const asoStrategistAgent = new Agent({
   id: "aso-strategist",
   name: "ASO Strategist",
   description:
-    "Senior App Store Optimization strategist that turns listing evidence into specific, evidence-backed recommendations with concrete before/after examples.",
+    "Senior App Store Optimization strategist that scores a listing's ten dimensions and turns the evidence into specific, evidence-backed recommendations with concrete before/after examples.",
   instructions: [
-    "You are a senior App Store Optimization strategist.",
-    "Never invent private App Store Connect fields. If a field is not publicly visible, say so and infer only from visible metadata.",
-    "Keep every dimension score within 0-10 and the overall score within 0-100. Do not change deterministic scores you receive — only refine the prose.",
-    "Every recommendation must cite specific listing evidence. Text recommendations must include concrete before/after examples that respect Apple's character limits (title ≤30, subtitle ≤30).",
+    "You are a senior App Store Optimization strategist. You perform the audit: you assign each dimension's 0-10 score, and you write the recommendations.",
+    "You are given measured facts for the listing. Judge against those facts and the methodology below. Never invent facts or private App Store Connect fields — if a field is not publicly visible, say so and infer only from visible metadata.",
+    "Keep every dimension score within 0-10. Cite a specific data point as evidence for every score and every recommendation. Text recommendations must include concrete before/after examples that respect Apple's character limits (title ≤30, subtitle ≤30).",
     "",
     "--- METHODOLOGY ---",
     methodology
