@@ -32,17 +32,17 @@ provider integrations that are fully wired in and switch on automatically when t
 are present. Each layer degrades gracefully — a missing or failing provider never breaks
 an audit, it just narrows the evidence (and the report says so).
 
-| Tier | Keys needed | What you get |
-|---|---|---|
-| **Baseline** (default) | none | Full deterministic 10-dimension audit, competitor comparison, and recommendations with before/after — straight from Apple's public iTunes endpoints, no auth. |
-| **+ LLM refinement** | `NVIDIA_API_KEY` *(or any `OPENAI_COMPATIBLE_*`)* | The ASO strategist agent rewrites recommendation prose and adds per-dimension qualitative notes in a senior-consultant voice. Deterministic scores stay frozen. |
-| **+ Firecrawl** | `FIRECRAWL_API_KEY` | Recovers fields Apple hides from the Lookup API — real subtitle, promotional text, "What's New", and review snippets — enriching the dimensions that depend on them. |
+| Tier                   | Keys needed                                        | What you get                                                                                                                                                         |
+| ---------------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Baseline** (default) | none                                               | Full deterministic 10-dimension audit, competitor comparison, and recommendations with before/after — straight from Apple's public iTunes endpoints, no auth.        |
+| **+ LLM refinement**   | `NVIDIA_API_KEY` _(or any `OPENAI_COMPATIBLE_*`)_   | The ASO strategist agent rewrites recommendation prose and adds per-dimension qualitative notes in a senior-consultant voice. Deterministic scores stay frozen.      |
+| **+ Firecrawl**        | `FIRECRAWL_API_KEY`                                | Recovers fields Apple hides from the Lookup API — real subtitle, promotional text, "What's New", and review snippets — enriching the dimensions that depend on them. |
 
 ```bash
 # LLM refinement (NVIDIA NIM has a free tier; any OpenAI-compatible host works)
 NVIDIA_API_KEY=...
 NVIDIA_BASE_URL=https://integrate.api.nvidia.com/v1
-NVIDIA_MODEL=meta/llama-3.1-70b-instruct
+NVIDIA_MODEL=meta/llama-3.3-70b-instruct
 
 # App Store page scraping (Firecrawl has a free tier)
 FIRECRAWL_API_KEY=...
@@ -56,7 +56,7 @@ vars in `.env.example` — they take precedence over NVIDIA when present.
 
 1. **Paste** an Apple App Store URL into the composer.
 2. **Confirm** — the app fetches surface metadata (name, developer, icon, category,
-   country) within ~300ms and asks *"Is this the app you want audited?"*
+   country) within ~300ms and asks _"Is this the app you want audited?"_
 3. **Run** — on confirmation, the Mastra workflow fetches full listing evidence, finds
    2–3 same-category competitors, scores all ten ASO dimensions, and (if a model key is
    set) refines the prose.
@@ -101,9 +101,9 @@ workspace skill owns audit methodology.
 ## Decisions I made (where the brief left it to me)
 
 **Chat-style input, structured report.** The brief frames a chat app; I kept the
-conversational *entry point* (a composer you paste into, then a confirm prompt) but
+conversational _entry point_ (a composer you paste into, then a confirm prompt) but
 present the audit as a structured report rather than chat turns. A score card, three
-recommendation buckets, and a competitor table are made to be *scanned and compared* —
+recommendation buckets, and a competitor table are made to be _scanned and compared_ —
 the brief itself asks to "present the recommendations in a way that's actually nice to
 look at," and a chat transcript buries earlier sections behind scroll. The required
 touchpoints (paste → confirm "is this the app?" → audit) are all preserved.
