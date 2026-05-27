@@ -125,7 +125,23 @@ body::before {
   border-radius: 6px;
 }
 
+/* Rotating "agent is thinking" verb on the running screen — each new verb
+ * fades/rises in as it swaps (re-mounted via React key). */
+@keyframes verb-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @layer utilities {
+  .animate-verb {
+    animation: verb-in 320ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
   .text-mono {
     font-family: theme("fontFamily.mono");
     font-feature-settings: "tnum", "ss01";

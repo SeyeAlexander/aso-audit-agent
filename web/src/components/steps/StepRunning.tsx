@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Check, Loader2 } from "lucide-react";
+import { Check, Loader2, Sparkles } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 interface Props {
@@ -15,6 +15,23 @@ interface Stage {
   estimateMs: number;
 }
 
+// Playful "the agent is thinking" labels that rotate while the agent-led audit
+// runs — a blend of Claude-style gerunds and concrete ASO actions, so the long
+// LLM wait feels alive and honest about what's happening.
+const AGENT_VERBS = [
+  "Pondering",
+  "Scoring dimensions",
+  "Ruminating",
+  "Weighing keywords",
+  "Cogitating",
+  "Sizing up rivals",
+  "Noodling",
+  "Drafting fixes",
+  "Percolating",
+  "Polishing prose",
+  "Finalizing"
+];
+
 export function StepRunning({ appName, llm, firecrawl }: Props): JSX.Element {
   const stages: Stage[] = [
     {
@@ -24,14 +41,14 @@ export function StepRunning({ appName, llm, firecrawl }: Props): JSX.Element {
       estimateMs: firecrawl ? 2400 : 700
     },
     { id: "competitors", label: "Find competitors", detail: "Apple Search · same category", estimateMs: 900 },
-    { id: "score", label: "Score 10 dimensions", detail: "Deterministic ASO engine", estimateMs: 300 },
+    { id: "measure", label: "Measure 10 dimensions", detail: "Deterministic ASO engine", estimateMs: 300 },
     {
-      id: "refine",
-      label: "Refine audit",
+      id: "audit",
+      label: "Agent scores & recommends",
       detail: llm
-        ? "ASO strategist · NVIDIA NIM · parallel qualitative + prose pass"
-        : "Skipped (no LLM key)",
-      estimateMs: llm ? 8000 : 0
+        ? "ASO Strategist agent · NVIDIA Llama 3.3 70B"
+        : "Skipped (no LLM key) — deterministic baseline",
+      estimateMs: llm ? 45000 : 0
     }
   ];
 
@@ -40,6 +57,19 @@ export function StepRunning({ appName, llm, firecrawl }: Props): JSX.Element {
   // honest UX: it tells the user what's happening, not lies about progress.
   const [activeIndex, setActiveIndex] = useState(0);
   const [longRunning, setLongRunning] = useState(false);
+  const [verbIndex, setVerbIndex] = useState(0);
+
+  // The agent step is the last stage; it stays "active" for the whole LLM run.
+  const agentActive = llm && activeIndex >= stages.length - 1;
+
+  // Cycle the thinking verb every couple seconds while the agent is working.
+  useEffect(() => {
+    if (!agentActive) return;
+    const id = setInterval(() => {
+      setVerbIndex((index) => (index + 1) % AGENT_VERBS.length);
+    }, 2200);
+    return () => clearInterval(id);
+  }, [agentActive]);
 
   useEffect(() => {
     let cancelled = false;
@@ -127,9 +157,23 @@ export function StepRunning({ appName, llm, firecrawl }: Props): JSX.Element {
         })}
       </ol>
 
+      {agentActive ? (
+        <div className="flex flex-col items-center gap-1.5 text-center">
+          <div className="flex items-center gap-2 text-[14px] text-ink-soft">
+            <Sparkles className="h-3.5 w-3.5 text-accent-green/90 animate-pulse" />
+            <span key={verbIndex} className="animate-verb">
+              {AGENT_VERBS[verbIndex]}…
+            </span>
+          </div>
+          <p className="text-[12px] text-muted">
+            The ASO agent is auditing — this usually takes up to ~2 minutes.
+          </p>
+        </div>
+      ) : null}
+
       {longRunning ? (
         <p className="text-[12px] text-muted text-center max-w-md">
-          Still working — large listings or slow upstreams can stretch this past a minute.
+          Still working — large listings or slow upstreams can stretch this a little longer.
         </p>
       ) : null}
     </div>
