@@ -74,9 +74,17 @@ export function StepInput({
 
   return (
     <div className="w-full max-w-2xl flex flex-col items-center gap-7 sm:gap-10">
-      <h1 className="text-center text-[28px] sm:text-[34px] font-semibold tracking-tight leading-tight">
-        What app should we audit?
-      </h1>
+      <header className="flex flex-col items-center text-center gap-2 sm:gap-3">
+        <span className="text-[12px] uppercase tracking-[0.18em] text-muted">
+          ASO Audit Agent
+        </span>
+        <h1 className="text-[28px] sm:text-[34px] font-semibold tracking-tight leading-tight">
+          What app should we audit?
+        </h1>
+        <p className="text-[14px] text-ink-soft max-w-md">
+          Paste an Apple App Store URL — get a structured, evidence-backed ASO audit.
+        </p>
+      </header>
 
       <form onSubmit={submit} className="w-full">
         <div
