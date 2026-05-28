@@ -5,6 +5,10 @@ chat-style composer, confirm the app, and get a structured, evidence-backed ASO 
 a weighted 0–100 score card, effort-bucketed recommendations with before/after examples,
 and a top-3 competitor comparison.
 
+> **Live demo:** _add the Vercel URL here once deployed._
+> Frontend on Vercel, backend on Render — a Mastra agent does the scoring + recommendations
+> using a workspace skill, with a deterministic TypeScript engine as the guardrail and fallback.
+
 ## Prerequisites
 
 - **Node ≥ 20** (`node -v`) — the build relies on modern type-stripping.
@@ -43,7 +47,7 @@ app degrades gracefully if either is missing.
 # LLM refinement (NVIDIA NIM has a free tier; any OpenAI-compatible host works)
 NVIDIA_API_KEY=...
 NVIDIA_BASE_URL=https://integrate.api.nvidia.com/v1
-NVIDIA_MODEL=meta/llama-3.3-70b-instruct
+NVIDIA_MODEL=meta/llama-3.1-8b-instruct
 
 # App Store page scraping (Firecrawl has a free tier)
 FIRECRAWL_API_KEY=...

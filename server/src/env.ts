@@ -4,7 +4,7 @@ import { z } from "zod";
 const envSchema = z.object({
   NVIDIA_API_KEY: z.string().optional(),
   NVIDIA_BASE_URL: z.string().url().default("https://integrate.api.nvidia.com/v1"),
-  NVIDIA_MODEL: z.string().default("meta/llama-3.3-70b-instruct"),
+  NVIDIA_MODEL: z.string().default("meta/llama-3.1-8b-instruct"),
   OPENAI_COMPATIBLE_API_KEY: z.string().optional(),
   OPENAI_COMPATIBLE_BASE_URL: z.string().url().optional(),
   OPENAI_COMPATIBLE_MODEL: z.string().optional(),

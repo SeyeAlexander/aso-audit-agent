@@ -1,5 +1,10 @@
 import type { AuditResponse, ListingResponse } from "./types";
 
+// In dev (no env var) we hit relative `/api/*` paths through the Vite proxy.
+// In production the frontend (Vercel) and backend (Render) live on different
+// origins, so set VITE_API_BASE_URL to the backend's URL at build time.
+const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/$/, "");
+
 const GENERIC_SERVER_ERROR = "Server error — please try again.";
 
 // Fallback for anything that slips past the server's sanitizer (older builds,
@@ -18,7 +23,7 @@ function sanitizeError(message: string | undefined, status: number): string {
 async function postJson<T>(path: string, body: unknown): Promise<T> {
   let response: Response;
   try {
-    response = await fetch(path, {
+    response = await fetch(`${API_BASE}${path}`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(body)

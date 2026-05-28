@@ -46,9 +46,9 @@ export function StepRunning({ appName, llm, firecrawl }: Props): JSX.Element {
       id: "audit",
       label: "Agent scores & recommends",
       detail: llm
-        ? "ASO Strategist agent · NVIDIA Llama 3.3 70B"
+        ? "ASO Strategist agent · NVIDIA Llama 3.1 8B"
         : "Skipped (no LLM key) — deterministic baseline",
-      estimateMs: llm ? 45000 : 0
+      estimateMs: llm ? 12000 : 0
     }
   ];
 
@@ -166,7 +166,7 @@ export function StepRunning({ appName, llm, firecrawl }: Props): JSX.Element {
             </span>
           </div>
           <p className="text-[12px] text-muted">
-            The ASO agent is auditing — this usually takes up to ~2 minutes.
+            The ASO agent is auditing — this usually takes ~15 seconds.
           </p>
         </div>
       ) : null}
