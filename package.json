@@ -1,9 +1,9 @@
 {
-  "name": "aso-audit-agent",
+  "name": "loupe",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Mastra-powered ASO auditor for Apple App Store listings.",
+  "description": "Loupe — LLM-agent App Store Optimization auditor built on Mastra.",
   "engines": {
     "node": ">=20"
   },

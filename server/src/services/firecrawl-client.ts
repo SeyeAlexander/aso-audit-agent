@@ -1,7 +1,7 @@
 import { env, hasFirecrawl } from "../env.js";
 
 /**
- * Fields the iTunes Lookup API does NOT return that the brief's audit needs.
+ * Fields the iTunes Lookup API does NOT return that the audit needs.
  * All optional: a Firecrawl failure (or absent key) should never break an audit.
  */
 export interface AppStorePageEnrichment {

@@ -204,8 +204,8 @@ function scoreScreenshots(listing: AppStoreListing): DimensionScore {
   const iphoneCount = listing.screenshotUrls?.length ?? 0;
   const ipadCount = listing.ipadScreenshotUrls?.length ?? 0;
 
-  // Apple allows up to 10 iPhone screenshots; that's the real budget the brief
-  // is asking about.
+  // Apple allows up to 10 iPhone screenshots; that's the real budget we
+  // score utilization against.
   const iphoneUtilization = iphoneCount / SCREENSHOT_SLOTS;
   const utilizationScore = iphoneUtilization >= 0.8 ? 5 : iphoneUtilization >= 0.5 ? 4 : iphoneUtilization >= 0.3 ? 2.5 : 1;
   const ipadScore = ipadCount >= 3 ? 2.5 : ipadCount > 0 ? 1.5 : 0.5;
@@ -278,7 +278,7 @@ function scoreIcon(listing: AppStoreListing): DimensionScore {
 }
 
 function scoreConversionSignals(listing: AppStoreListing): DimensionScore {
-  // The four brief-mentioned conversion levers: promotional text, What's New
+  // The four primary conversion levers: promotional text, What's New
   // freshness, In-App Events / Custom Product Pages (not exposed via Lookup),
   // plus basic trust signals.
   const hasPromo = Boolean(listing.promotionalText);

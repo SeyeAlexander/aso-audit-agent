@@ -8,7 +8,7 @@ license: MIT
 
 Score every audit on the ten required dimensions: title, subtitle, keyword field, description, screenshots, app preview video, ratings and reviews, icon, conversion signals, and competitive position.
 
-The raw brief weights add up to 110. Preserve their relative importance, then normalize the total to 100 so the overall score cannot exceed 100.
+Dimension weights are tuned so each carries roughly its real impact on conversion and discovery. Preserve their relative importance, then normalize the total to 100 so the overall score cannot exceed 100.
 
 Use only evidence found in the Apple listing metadata, App Store page hints, and public Apple Search comparison set. If a private App Store Connect field is not visible, say so and infer only from visible metadata.
 

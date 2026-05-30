@@ -58,7 +58,7 @@ const agentScoringSchema = z.object({
 // (rather than authoring from scratch) keeps the bucket structure and, crucially,
 // preserves the deterministic before/after values (current title → proposed
 // rewrite) whenever the model omits them — so text changes always show a
-// concrete before/after as the brief requires.
+// concrete before/after.
 const refinedRecommendationSchema = z.object({
   index: z.number().int().nonnegative(),
   title: z.string().min(4).max(120),

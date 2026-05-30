@@ -5,7 +5,7 @@
 /* ---------- Theme tokens ---------------------------------------------------
  * Light + dark are full token sets so we can switch by toggling the
  * `data-theme` attribute on <html>. RGB triplets so Tailwind's `bg-bg/50` etc.
- * compose with alpha. Values mirror Layers' public theme.css for brand fit.
+ * compose with alpha.
  * ------------------------------------------------------------------------- */
 
 :root,

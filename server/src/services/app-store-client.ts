@@ -70,7 +70,7 @@ export class AppStoreClient {
   private async fetchHtmlHints(url: string): Promise<Pick<AppStoreListing, "htmlSubtitle" | "htmlDescription">> {
     const response = await fetch(url, {
       headers: {
-        "user-agent": "aso-audit-agent/0.1 (+https://github.com/mikekhristo)"
+        "user-agent": "loupe/0.1 (+https://github.com/SeyeAlexander)"
       }
     });
 
